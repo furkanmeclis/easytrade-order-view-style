@@ -12,10 +12,11 @@ import {
   Td,
   TableContainer,
   Text,
+  Divider,
   Image,
   Button,
 } from '@chakra-ui/react';
-import { FcPrint } from 'react-icons/fc';
+import { FcPrint, FcBusinessman } from 'react-icons/fc';
 export default function App() {
   return (
     <>
@@ -87,16 +88,44 @@ export default function App() {
               <Button colorScheme="blue" rightIcon={<FcPrint />} m="2">
                 Yazdır
               </Button>
-              <Button colorScheme="blue" rightIcon={<FcPrint />} m="2">
-                Fiş Yazdır
-              </Button>
-              <Button colorScheme="blue" rightIcon={<FcPrint />} m="2">
-                Kargo Fişi Yazdır
-              </Button>
             </Box>
           </Stack>
         </Box>
-        <Box flex={1}></Box>
+        <Box flex={1}>
+          <Flex direction="column">
+            <Box
+              m="4"
+              borderRadius={4}
+              bg="gray.100"
+              p="4"
+              w="full"
+              h="full"
+              flex="1">
+              <Heading size="md">Sipariş Özeti</Heading>
+              <Heading size="xs" color="gray.600" mt="4">Bugün 13:06</Heading>
+              <Heading size="sm" color="gray.700" mt="4" display="flex"><FcBusinessman /> <Text ml="2">Oğuz Yılmaz</Text></Heading>
+              <Divider my="4" colorScheme="blue" />
+              <Box display="flex" my="1" justifyContent={"space-between"}>
+                <Text fontWeight={500} color="gray.500">Ara Toplam</Text>
+                <Text fontWeight={500} color="black">123</Text>
+              </Box>
+              <Box display="flex" my="1" justifyContent={"space-between"}>
+                <Text fontWeight={500} color="gray.500">Genel Toplam</Text>
+                <Text fontWeight={500} color="black">123</Text>
+              </Box>
+              <Divider my="4" colorScheme="blue" />
+              <Box display="flex" justifyContent={"space-between"}>
+                <Text fontWeight={500} color="gray.500">Vergi Toplam</Text>
+                <Text fontWeight={500} color="black">123</Text>
+              </Box>
+              <Divider my="4" colorScheme="blue" />
+              <Box display="flex" justifyContent={"space-between"}>
+                <Text fontWeight={600} color="gray.900">Toplam</Text>
+                <Text fontWeight={500} color="black">123</Text>
+              </Box>
+            </Box>
+          </Flex>
+        </Box>
       </Flex>
     </>
   );
