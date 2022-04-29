@@ -16,11 +16,14 @@ import {
   Image,
   Button,
 } from '@chakra-ui/react';
-import { FcPrint, FcBusinessman } from 'react-icons/fc';
+import { FcPrint, FcBusinessman, FcShipped, FcDocument } from 'react-icons/fc';
 export default function App() {
+  const printPage = () => {
+    alert('Eksikler tamamlanacak')
+  }
   return (
     <>
-      <Flex w="full" direction={['column', 'row']}>
+      <Flex w="full" direction={['column', 'column','row']} id="contentArea">
         <Box flex={3}>
           <Stack
             direction="column"
@@ -85,14 +88,15 @@ export default function App() {
               </TableContainer>
             </Box>
             <Box h="20%">
-              <Button colorScheme="blue" rightIcon={<FcPrint />} m="2">
+              <Button colorScheme="blue" onClick={printPage} rightIcon={<FcPrint />} m="2">
                 Yazdır
               </Button>
             </Box>
           </Stack>
         </Box>
-        <Box flex={1}>
+        <Box flex={1} >
           <Flex direction="column">
+
             <Box
               m="4"
               borderRadius={4}
@@ -100,7 +104,7 @@ export default function App() {
               p="4"
               w="full"
               h="full"
-              flex="1">
+              flex="2">
               <Heading size="md">Sipariş Özeti</Heading>
               <Heading size="xs" color="gray.600" mt="4">Bugün 13:06</Heading>
               <Heading size="sm" color="gray.700" mt="4" display="flex"><FcBusinessman /> <Text ml="2">Oğuz Yılmaz</Text></Heading>
@@ -123,6 +127,28 @@ export default function App() {
                 <Text fontWeight={600} color="gray.900">Toplam</Text>
                 <Text fontWeight={500} color="black">123</Text>
               </Box>
+            </Box>
+            <Box
+              m="4"
+              borderRadius={4}
+              bg="gray.100"
+              p="4"
+              w="full"
+              h="full"
+              flex="1">
+              <Heading size="md" mb="4">Adres Bilgileri</Heading><Text fontWeight="500" color="gray.500">
+               
+                <Flex alignItems={"center"}><FcShipped  /><Text ml="2" color="gray.900">Teslimat Adresi</Text>
+                </Flex>
+                  Adana
+              </Text>
+              <Divider my="4" colorScheme="blue" />
+              <Text fontWeight="500" color="gray.500">
+               
+               <Flex alignItems={"center"}><FcDocument  /><Text ml="2" color="gray.900">Fatura Adresi</Text>
+               </Flex>
+                 Adana
+             </Text>
             </Box>
           </Flex>
         </Box>
