@@ -19,7 +19,7 @@ import {
 import { FcPrint, FcBusinessman, FcShipped, FcDocument } from 'react-icons/fc';
 export default function App() {
   const printPage = () => {
-    alert('Eksikler tamamlanacak')
+    window.print()
   }
   return (
     <>
