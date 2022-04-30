@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   Box,
@@ -15,15 +15,34 @@ import {
   Divider,
   Image,
   Button,
+  Center
 } from '@chakra-ui/react';
+import ReactToPrint,{useReactToPrint } from 'react-to-print'
 import { FcPrint, FcBusinessman, FcShipped, FcDocument } from 'react-icons/fc';
 export default function App() {
+  const [print, setPrint] = useState(false);
+ 
+  let componentRef = React.useRef(null);
   const printPage = () => {
-    window.print()
+
+    setPrint(true);
+    setTimeout(() => {
+     prints();
+    },500);
   }
+  const prints =  useReactToPrint({
+    content: () => componentRef,
+    onAfterPrint:() => {
+      setPrint(false)
+    }
+  });
   return (
-    <>
-      <Flex w="full" direction={['column', 'column','row']} id="contentArea">
+    <div id="contentArea" ref={componentRef}>
+     
+        <Center>
+          <Heading>Sipariş Detayları</Heading>
+        </Center> 
+      <Flex w="full" direction={['column', 'column', 'row']} id="contentArea">
         <Box flex={3}>
           <Stack
             direction="column"
@@ -88,9 +107,10 @@ export default function App() {
               </TableContainer>
             </Box>
             <Box h="20%">
-              <Button colorScheme="blue" onClick={printPage} rightIcon={<FcPrint />} m="2">
-                Yazdır
-              </Button>
+              
+{print === false ? <Button colorScheme="blue" onClick={printPage} rightIcon={<FcPrint />} m="2">
+                  Yazdır
+                </Button>: ''}
             </Box>
           </Stack>
         </Box>
@@ -102,7 +122,6 @@ export default function App() {
               borderRadius={4}
               bg="gray.100"
               p="4"
-              w="full"
               h="full"
               flex="2">
               <Heading size="md">Sipariş Özeti</Heading>
@@ -133,26 +152,25 @@ export default function App() {
               borderRadius={4}
               bg="gray.100"
               p="4"
-              w="full"
               h="full"
               flex="1">
               <Heading size="md" mb="4">Adres Bilgileri</Heading><Text fontWeight="500" color="gray.500">
-               
-                <Flex alignItems={"center"}><FcShipped  /><Text ml="2" color="gray.900">Teslimat Adresi</Text>
+
+                <Flex alignItems={"center"}><FcShipped /><Text ml="2" color="gray.900">Teslimat Adresi</Text>
                 </Flex>
-                  Adana
+                Adana
               </Text>
               <Divider my="4" colorScheme="blue" />
               <Text fontWeight="500" color="gray.500">
-               
-               <Flex alignItems={"center"}><FcDocument  /><Text ml="2" color="gray.900">Fatura Adresi</Text>
-               </Flex>
-                 Adana
-             </Text>
+
+                <Flex alignItems={"center"}><FcDocument /><Text ml="2" color="gray.900">Fatura Adresi</Text>
+                </Flex>
+                Adana
+              </Text>
             </Box>
           </Flex>
         </Box>
       </Flex>
-    </>
+    </div>
   );
 }
