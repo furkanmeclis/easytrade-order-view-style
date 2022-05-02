@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useBarcode } from "react-barcodes";
 import {
   Flex,
   Box,
@@ -29,18 +30,21 @@ import { useReactToPrint } from "react-to-print";
 import {
   FcPrint,
   FcBusinessman,
+  FcDisplay,
   FcShipped,
   FcDocument,
   FcClock,
   FcLink,
+  FcInTransit,
 } from "react-icons/fc";
 import statusHelper from "./StatusData";
 import QRCode from "react-qr-code";
 export default function App({ order }) {
   const toast = useToast();
   const [print, setPrint] = useState(false);
+  const [ticket, setTicket] = useState(false);
   const [breakpoints, setBreakpoints] = useState([null, "column", "row"]);
-  const [box1, setBox1] = useState([null, "100%", "75%"]);
+  const [box1, setBox1] = useState("column");
   const [box2, setBox2] = useState([null, "100%", "25%"]);
   const componentRef = React.useRef(null);
   const [activeValue, setActiveValue] = useState(null);
@@ -48,10 +52,21 @@ export default function App({ order }) {
   React.useEffect(() => {
     order.packageHistories.reverse();
   });
+
   const printPage = (e) => {
     setPrint(true);
     setBreakpoints("column");
-    setBox1("100%");
+    setBox1("row");
+    setBox2("100%");
+    setTimeout(() => {
+      prints(e);
+    }, 500);
+  };
+  const printTicket = (e) => {
+    setPrint(true);
+    setTicket(true);
+    setBreakpoints("column");
+    setBox1("row");
     setBox2("100%");
     setTimeout(() => {
       prints(e);
@@ -61,11 +76,28 @@ export default function App({ order }) {
     content: () => componentRef.current,
     onAfterPrint: () => {
       setPrint(false);
+      setTicket(false);
       setBreakpoints([null, "column", "row"]);
-      setBox1([null, "100%", "75%"]);
+      setBox1("column");
       setBox2([null, "100%", "25%"]);
     },
   });
+  const Barcode = () => {
+    const { inputRef } = useBarcode({
+      value: order.cargoTrackingNumber,
+      options: {
+        background: "#EDF2F7",
+        displayValue: true,
+        height: 32,
+        width: 1,
+      },
+    });
+    return (
+      <>
+        <canvas ref={inputRef} />
+      </>
+    );
+  };
   return (
     <div ref={componentRef}>
       {print === true ? (
@@ -76,7 +108,7 @@ export default function App({ order }) {
         ""
       )}
       <Flex w="full" direction={breakpoints}>
-        <Box w={box1} display="block">
+        <Box w={[null, "100%", "75%"]} display="block" hidden={print}>
           <Flex direction="column">
             <Stack
               direction="column"
@@ -216,6 +248,18 @@ export default function App({ order }) {
                   </Button>
                 ) : (
                   ""
+                )}{" "}
+                {print === false ? (
+                  <Button
+                    colorScheme="orange"
+                    onClick={printTicket}
+                    rightIcon={<FcInTransit />}
+                    m="2"
+                  >
+                    Kargo Etiketi Yazdır
+                  </Button>
+                ) : (
+                  ""
                 )}
               </Box>
             </Stack>
@@ -223,8 +267,8 @@ export default function App({ order }) {
               <Heading size="md" mb="4">
                 Sipariş Geçmişi
               </Heading>
-              <TableContainer  bg="white" borderRadius="md">
-                <Table variant="simple" >
+              <TableContainer bg="white" borderRadius="md">
+                <Table variant="simple">
                   <Thead>
                     <Tr>
                       <Th>Durum</Th>
@@ -244,9 +288,7 @@ export default function App({ order }) {
                               {statusHelper.getStatus(e.status).text}
                             </Badge>
                           </Td>
-                          <Td>
-                            {new Date(e.createdDate).toLocaleString()}
-                          </Td>
+                          <Td>{new Date(e.createdDate).toLocaleString()}</Td>
                         </Tr>
                       );
                     })}
@@ -257,8 +299,8 @@ export default function App({ order }) {
           </Flex>
         </Box>
         <Box w={box2} display="block">
-          <Flex direction="column">
-            <Box m="4" borderRadius={4} bg="gray.100" p="4" h="full">
+          <Flex direction={box1}>
+            <Box m="4" flex="1" borderRadius={4} bg="gray.100" p="4" h="full">
               <Heading size="md">Sipariş Özeti</Heading>
               <Heading size="xs" color="gray.600" mt="4">
                 {new Date(order.orderDate).toLocaleDateString()}
@@ -281,15 +323,6 @@ export default function App({ order }) {
 
               <Divider my="4" colorScheme="blue" />
               <Box display="flex" justifyContent={"space-between"}>
-                <Text fontWeight={500} color="gray.500">
-                  Vergi Toplam
-                </Text>
-                <Text fontWeight={500} color="black">
-                  123
-                </Text>
-              </Box>
-              <Divider my="4" colorScheme="blue" />
-              <Box display="flex" justifyContent={"space-between"}>
                 <Text fontWeight={600} color="gray.900">
                   Toplam
                 </Text>
@@ -297,8 +330,42 @@ export default function App({ order }) {
                   {order.totalPrice} {order.currencyCode}
                 </Text>
               </Box>
+
+              
+              <Box hidden={!ticket}>
+                <Divider my="4" colorScheme="blue" />
+                <Flex
+                  my="1"
+                  justifyContent={"space-between"}
+                  alignItems="center"
+                >
+                  <Text fontWeight={600} color="gray.900">
+                    Sipariş No
+                  </Text>
+                  <Text>{order.id}</Text>
+                </Flex>
+                <Divider my="4" colorScheme="blue" />
+                <Flex
+                  my="1"
+                  justifyContent={"space-between"}
+                  alignItems="center"
+                >
+                  <Text fontWeight={600} color="gray.900">
+                    Kargo Takip No
+                  </Text>
+                  <Barcode />
+                </Flex>
+              </Box>
             </Box>
-            <Box m="4" borderRadius={4} bg="gray.100" p="4" h="full">
+            <Box
+              m="4"
+              flex="1"
+              hidden={ticket}
+              borderRadius={4}
+              bg="gray.100"
+              p="4"
+              h="full"
+            >
               <Heading size="md" mb="4">
                 Teslimat Bilgileri
               </Heading>
@@ -309,6 +376,7 @@ export default function App({ order }) {
                     fontWeight="500"
                     justifyContent={"space-between"}
                     color="gray.500"
+                    hidden={print}
                   >
                     <Flex alignItems={"center"}>
                       <FcLink />
@@ -335,7 +403,29 @@ export default function App({ order }) {
                       title={order.cargoTrackingNumber}
                     />
                   </Flex>
-                  <Divider my="4" colorScheme="blue" />
+                  <Divider hidden={print} my="4" colorScheme="blue" />
+                  <Text hidden={!print} fontWeight="500" color="gray.500">
+                    <Flex alignItems={"center"}>
+                      <FcInTransit />
+                      <Text ml="2" color="gray.900">
+                        Kargo Firması
+                      </Text>
+                    </Flex>
+                    {order.cargoProviderName}
+                  </Text>
+                  <Divider hidden={!print} my="4" colorScheme="blue" />
+                  <Text hidden={!print} fontWeight="500" color="gray.500">
+                    <Flex alignItems={"center"}>
+                      <FcDisplay />
+                      <Text ml="2" color="gray.900">
+                        Takip Numarası
+                      </Text>
+                    </Flex>
+                    <Center>
+                      <Barcode />
+                    </Center>
+                  </Text>
+                  <Divider hidden={!print} my="4" colorScheme="blue" />
                 </>
               ) : (
                 ""
@@ -370,6 +460,7 @@ export default function App({ order }) {
                 {order.invoiceAddress.fullAddress}
               </Text>
             </Box>
+            {ticket && <Box flex="3" /> }
           </Flex>
         </Box>
       </Flex>
