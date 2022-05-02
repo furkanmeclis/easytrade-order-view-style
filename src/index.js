@@ -6,7 +6,7 @@ import App from './App';
 
 ReactDOM.render(
   <ChakraProvider>
-    <App />
+    <App order={JSON.parse(document.getElementById('root').getAttribute('order'))} />
   </ChakraProvider>,
   document.getElementById('root')
 );
